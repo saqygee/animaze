@@ -1,0 +1,27 @@
+{
+  "id": "org.animaze.addon",
+  "version": "1.0.0",
+  "name": "Animaze",
+  "description": "Animaze fetches and displays the top currently airing anime series ranked by Ranker.com. The list is updated weekly, providing anime fans with a fresh and curated selection of the most popular shows.",
+  "logo": "https://i.imgur.com/324YHsS.png", 
+  "icon": "https://i.imgur.com/324YHsS.png", 
+  "contactEmail": "saky.alpha@gmail.com", 
+  "resources": [
+    "catalog"
+  ],
+  "types": ["series"],
+  "idPrefixes": ["tt:"],
+  "catalogs": [
+    {
+      "type": "series",
+      "id": "top-airing",
+      "name": "Animaze Series - Top Airing by Ranker.com"
+    }
+  ],
+  "behaviorHints": {
+    "adult": false,
+    "configurable": false, 
+    "configurationRequired": false
+  }
+}
+ 
