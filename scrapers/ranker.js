@@ -2,13 +2,13 @@ const axios = require("axios");
 const { v4: uuidv4 } = require("uuid");
 const Fuse = require("fuse.js");
 
-async function getAiringAnime(omdbAPIKey) {
+async function getAiringAnime(omdbAPIKey,db) {
   const baseURL = "https://cache-api.ranker.com/lists/2235482/items";
   let allAnimes = [];
   let offset = 0;
   const limit = 10;
   let hasMore = true;
-
+  
   while (hasMore) {
     try {
       const { data } = await axios.get(baseURL, {
@@ -56,7 +56,7 @@ async function getAiringAnime(omdbAPIKey) {
 
   //console.log(`✅ Total animes fetched: ${allAnimes.length}`);
   //console.log(allAnimes);
-  return allAnimes;
+   await db.set('airing',allAnimes);
 }
 async function fetchOMDbSearch(title,omdbAPIKey) {
   async function fetchOMDb(query) {
