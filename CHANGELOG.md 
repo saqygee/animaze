@@ -1,0 +1,21 @@
+# Changelog
+
+## [1.1.0] - 2025-08-02
+
+### Added
+- **Anilist catalog support** with the following new feature flags:
+  - `Top Airing Anilist`
+  - `Top Anime Anilist`
+  - `Ongoing Season Anilist`
+  - `Popular Anime Anilist`
+  - `Next to Watch Anilist`
+  - `Upcoming Anime Anilist`
+- **Stremio custom configuration**
+- **Custom storage class** to replace third-party persistence
+
+### Changed
+- Switched to a new **IMDb fetcher** with a faster and more reliable approach (no rate limits)
+
+### Removed
+- Dependency on `node-persist`
+- Removed `omdb` integration

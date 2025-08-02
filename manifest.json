@@ -1,27 +1,104 @@
 {
   "id": "org.animaze.addon",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Animaze",
-  "description": "Animaze fetches and displays the top currently airing anime series ranked by Ranker.com. The list is updated weekly, providing anime fans with a fresh and curated selection of the most popular shows.",
-  "logo": "https://i.imgur.com/324YHsS.png", 
-  "icon": "https://i.imgur.com/324YHsS.png", 
-  "contactEmail": "saky.alpha@gmail.com", 
+  "description": "Animaze fetches and displays the top currently airing anime series ranked - Ranker.com. The list is updated weekly, providing anime fans with a fresh and curated selection of the most popular shows.",
+  "logo": "https://i.imgur.com/324YHsS.png",
+  "icon": "https://i.imgur.com/324YHsS.png",
+  "contactEmail": "saky.alpha@gmail.com",
   "resources": [
     "catalog"
   ],
-  "types": ["series"],
-  "idPrefixes": ["tt:"],
+  "types": [
+    "series"
+  ],
+  "idPrefixes": [
+    "tt:"
+  ],
   "catalogs": [
     {
       "type": "series",
-      "id": "top-airing",
-      "name": "Animaze Series - Top Airing by Ranker.com"
+      "id": "top-airing-ranker",
+      "name": "Top Airing - Ranker.com"
+    },
+    {
+      "type": "series",
+      "id": "top-airing-anilist",
+      "name": "Top Airing - Anilist"
+    },
+    {
+      "type": "series",
+      "id": "top-anilist",
+      "name": "Top Anime - Anilist"
+    },
+    {
+      "type": "series",
+      "id": "season-anilist",
+      "name": "Seasonal Anime - Anilist"
+    },
+    {
+      "type": "series",
+      "id": "popular-anilist",
+      "name": "Popular Anime - Anilist"
+    },
+    {
+      "type": "series",
+      "id": "next-to-watch-anilist",
+      "name": "What Next to Watch - Anilist"
+    },
+    {
+      "type": "series",
+      "id": "upcoming-anilist",
+      "name": "Upcoming Anime - Anilist"
     }
   ],
   "behaviorHints": {
     "adult": false,
-    "configurable": false, 
-    "configurationRequired": false
-  }
+    "configurable": true,
+    "configurationRequired": true
+  },
+    "config": [
+    {
+      "key": "top-airing-ranker",
+      "type": "checkbox",
+      "title": "Enable Top Airing - Ranker.com",
+      "default": true
+    },
+    {
+      "key": "top-airing-anilist",
+      "type": "checkbox",
+      "title": "Enable Top Airing - Anilist",
+      "default": true
+    },
+    {
+      "key": "top-anilist",
+      "type": "checkbox",
+      "title": "Enable Top Anime - Anilist",
+      "default": true
+    },
+    {
+      "key": "season-anilist",
+      "type": "checkbox",
+      "title": "Enable Seasonal Anime - Anilist",
+      "value": true
+    },
+    {
+      "key": "popular-anilist",
+      "type": "checkbox",
+      "title": "Enable Popular Anime - Anilist",
+      "default": true
+    },
+    {
+      "key": "next-to-watch-anilist",
+      "type": "checkbox",
+      "title": "Enable What Next to Watch - Anilist",
+      "default": false
+    },
+    {
+      "key": "upcoming-anilist",
+      "type": "checkbox",
+      "title": "Enable Upcoming Anime - Anilist",
+      "default": false
+    }
+  ]
 }
- 
