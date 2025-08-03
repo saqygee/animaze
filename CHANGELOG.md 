@@ -1,5 +1,7 @@
 # Changelog
-
+## [1.1.1] - 2025-08-02
+- **Netflix catalog support** using whats-on-netflix.com with the following new feature flags:
+   - 'Top Netflix Originals - netflix'
 ## [1.1.0] - 2025-08-02
 
 ### Added

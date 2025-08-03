@@ -8,6 +8,7 @@ const { addDays, dayAfter } = require("./utils/helpers");
 const { getAiringAnime } = require("./scrapers/ranker");
 const AniList = require("./scrapers/Anilist");
 const Storage = require("./classes/Storage");
+const { getNetflixOrignals } = require("./scrapers/netflix");
 //!INIT BLOCK
 const omdbAPIKey = process.env.OMDB_API_KEY;
 const NEXT_DAYS = process.env.NEXT_DAYS;
@@ -26,12 +27,11 @@ builder.defineCatalogHandler(async ({ id, config }) => {
 
     const selectedCatalog = Object.keys(config);
 
-    const shouldUpdate =
-      !nextUpdateDate || dayAfter(nextUpdateDate) || cachedData.length <= 0;
+    const shouldUpdate =  !nextUpdateDate || dayAfter(nextUpdateDate) || cachedData.length <= 0;
 
     if (shouldUpdate) {
       // Update shared date once
-      db.set("nextUpdateDate", addDays(7));
+      db.set("nextUpdateDate", addDays(NEXT_DAYS));
       console.log(`Updating catalog: ${cacheKey}`);
 
       switch (cacheKey) {
@@ -68,6 +68,10 @@ builder.defineCatalogHandler(async ({ id, config }) => {
             MAX_ANIME
           );
           db.set(cacheKey, upcomingAnilistResults);
+          break;
+        case "top-netflix-originals":
+          const netflixOriginalsResults = await getNetflixOrignals(MAX_ANIME);
+          db.set(cacheKey, netflixOriginalsResults);
           break;
         default:
           break;

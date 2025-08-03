@@ -1,8 +1,8 @@
 {
   "id": "org.animaze.addon",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "Animaze",
-  "description": "Animaze fetches and displays the top currently airing anime series ranked - Ranker.com. The list is updated weekly, providing anime fans with a fresh and curated selection of the most popular shows.",
+  "description": "Animaze curates and updates a weekly list of top anime from Anilist, Ranker, and Whats-on-Netflix—bringing fans the most popular series from trusted sources.",
   "logo": "https://i.imgur.com/324YHsS.png",
   "icon": "https://i.imgur.com/324YHsS.png",
   "contactEmail": "saky.alpha@gmail.com",
@@ -50,6 +50,11 @@
       "type": "series",
       "id": "upcoming-anilist",
       "name": "Upcoming Anime - Anilist"
+    },
+    {
+      "type": "series",
+      "id": "top-netflix-originals",
+      "name": "Top Netflix Originals - Netflix"
     }
   ],
   "behaviorHints": {
@@ -61,43 +66,49 @@
     {
       "key": "top-airing-ranker",
       "type": "checkbox",
-      "title": "Enable Top Airing - Ranker.com",
+      "title": "Top Airing - Ranker.com",
       "default": true
     },
     {
       "key": "top-airing-anilist",
       "type": "checkbox",
-      "title": "Enable Top Airing - Anilist",
+      "title": "Top Airing - Anilist",
       "default": true
     },
     {
       "key": "top-anilist",
       "type": "checkbox",
-      "title": "Enable Top Anime - Anilist",
+      "title": "Top Anime - Anilist",
       "default": true
     },
     {
       "key": "season-anilist",
       "type": "checkbox",
-      "title": "Enable Seasonal Anime - Anilist",
+      "title": "Seasonal Anime - Anilist",
       "value": true
     },
     {
       "key": "popular-anilist",
       "type": "checkbox",
-      "title": "Enable Popular Anime - Anilist",
+      "title": "Popular Anime - Anilist",
       "default": true
     },
     {
       "key": "next-to-watch-anilist",
       "type": "checkbox",
-      "title": "Enable What Next to Watch - Anilist",
+      "title": "What Next to Watch - Anilist",
       "default": false
     },
     {
       "key": "upcoming-anilist",
       "type": "checkbox",
-      "title": "Enable Upcoming Anime - Anilist",
+      "title": "Upcoming Anime - Anilist",
+      "default": false
+    },
+    {
+      "key": "top-netflix-originals",
+      "type": "checkbox",
+      "title": "Top Netflix Originals - Netflix",
       "default": false
     }
   ]
