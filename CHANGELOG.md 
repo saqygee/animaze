@@ -1,4 +1,7 @@
 # Changelog
+## [1.2.2] - 2025-10-04
+  -'Removed broken netflix list'
+  -'Fixed render circular upading problem'
 ## [1.2.1] - 2025-10-04
 - **Minor fixes**:
     -'Added endpoint for db.json file'

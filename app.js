@@ -74,13 +74,14 @@ builder.defineCatalogHandler(async ({ id, config }) => {
                 break;
               case "top-netflix-originals":
                 newData = await getNetflixOrignals(MAX_ANIME);
+                console.log('newData: ', newData);
                 break;
               default:
                 break;
             }
             
             memoryStorage.set(cacheKey, newData);
-            console.log('Update completed for catalog:', cacheKey, 'with', newData.length, 'items');
+            console.log('Update completed for catalog:', cacheKey, 'with', newData?.length, 'items');
             return newData;
           } catch (error) {
             console.error('Update failed for catalog:', cacheKey, error);

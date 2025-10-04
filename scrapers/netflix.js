@@ -9,14 +9,12 @@ async function getNetflixOrignals(pageLimit) {
 
     const limit = pageLimit || 10;
     const { data } = await axios.get(baseURL, {
-      params: {
-        _: "_=1754177644573",
-      },
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
       },
     });
+    console.log('dataNETFLIXXXXXXXXXXXXXXX: ', data);
 
     if (data && data.length > 0) {
       const rankedAnime = data
@@ -31,6 +29,7 @@ async function getNetflixOrignals(pageLimit) {
         dataItems.map(async (item) => {
           const title = item?.title;
           if (title) {
+            console.log('title: ', title);
             const id = await getIMDbId(title);
             return {
               id: id || uuidv4(), // Fallback if no OMDb result
