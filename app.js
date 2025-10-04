@@ -72,10 +72,6 @@ builder.defineCatalogHandler(async ({ id, config }) => {
               case "upcoming-anilist":
                 newData = await anilist.getUpcomingAnime(MAX_ANIME);
                 break;
-              case "top-netflix-originals":
-                newData = await getNetflixOrignals(MAX_ANIME);
-                console.log('newData: ', newData);
-                break;
               default:
                 break;
             }
