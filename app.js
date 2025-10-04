@@ -33,6 +33,7 @@ builder.defineCatalogHandler(async ({ id, config }) => {
     
 
     const shouldUpdate = !nextUpdateDate || dayAfter(nextUpdateDate) || cachedData.length <= 0;
+    console.log('shouldUpdate: ', shouldUpdate);
 
     if (shouldUpdate) {
       const updatedOn =  getCurrentDate();
