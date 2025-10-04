@@ -1,4 +1,9 @@
 # Changelog
+## [1.2.1] - 2025-10-04
+- **Minor fixes**:
+    -'Added endpoint for db.json file'
+    -'Fixed seasonal Autumn bug in anilist query'
+    -'Added current update date in db.json'
 ## [1.1.1] - 2025-08-02
 - **Netflix catalog support** using whats-on-netflix.com with the following new feature flags:
    - 'Top Netflix Originals - netflix'

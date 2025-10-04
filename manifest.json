@@ -1,11 +1,11 @@
 {
   "id": "org.animaze.addon",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "name": "Animaze",
   "description": "Animaze curates and updates a weekly list of top anime from Anilist, Ranker, and Whats-on-Netflix—bringing fans the most popular series from trusted sources.",
-  "logo": "https://i.imgur.com/324YHsS.png",
-  "icon": "https://i.imgur.com/324YHsS.png",
-  "contactEmail": "saky.alpha@gmail.com",
+  "logo": "https://i.imghippo.com/files/ziCn5406KAo.png",
+  "icon": "https://i.imghippo.com/files/ziCn5406KAo.png",
+  "author": "saky.alpha@gmail.com",
   "resources": [
     "catalog"
   ],
@@ -66,50 +66,42 @@
     {
       "key": "top-airing-ranker",
       "type": "checkbox",
-      "title": "Top Airing - Ranker.com",
-      "default": true
+      "title": "Top Airing - Ranker.com"
     },
     {
       "key": "top-airing-anilist",
       "type": "checkbox",
-      "title": "Top Airing - Anilist",
-      "default": true
+      "title": "Top Airing - Anilist"
     },
     {
       "key": "top-anilist",
       "type": "checkbox",
-      "title": "Top Anime - Anilist",
-      "default": true
+      "title": "Top Anime - Anilist"
     },
     {
       "key": "season-anilist",
       "type": "checkbox",
-      "title": "Seasonal Anime - Anilist",
-      "value": true
+      "title": "Seasonal Anime - Anilist"
     },
     {
       "key": "popular-anilist",
       "type": "checkbox",
-      "title": "Popular Anime - Anilist",
-      "default": true
+      "title": "Popular Anime - Anilist"
     },
     {
       "key": "next-to-watch-anilist",
       "type": "checkbox",
-      "title": "What Next to Watch - Anilist",
-      "default": false
+      "title": "What Next to Watch - Anilist"
     },
     {
       "key": "upcoming-anilist",
       "type": "checkbox",
-      "title": "Upcoming Anime - Anilist",
-      "default": false
+      "title": "Upcoming Anime - Anilist"
     },
     {
       "key": "top-netflix-originals",
       "type": "checkbox",
-      "title": "Top Netflix Originals - Netflix",
-      "default": false
+      "title": "Top Netflix Originals - Netflix"
     }
   ]
 }

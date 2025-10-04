@@ -28,6 +28,11 @@ class AniList {
         throw new Error(response.data.errors[0].message);
       return response.data.data;
     } catch (err) {
+      console.error("AniList GraphQL Query Failed:");
+      console.error("Query:", query);
+      console.error("Variables:", variables);
+      console.error("Status:", err.response?.status);
+      console.error("Data:", err.response?.data);
       throw new Error(`AniList API Error: ${err}`);
     }
   }

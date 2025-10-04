@@ -30,13 +30,16 @@ function getCurrentSeason() {
     month === 11 ||
     (month === 12 && day < 21)
   ) {
-    return "AUTUMN";
+    return "FALL";
   } else {
     return "WINTER";
   }
 }
-
+function getCurrentDate(){
+  return moment().format('DD-mm-yyyy')
+}
 module.exports = {
+  getCurrentDate,
   dayAfter,
   addDays,
   getCurrentSeason

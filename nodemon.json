@@ -1,0 +1,3 @@
+{
+  "ignore": ["storage/*", "*.log", "db.json"]
+}
