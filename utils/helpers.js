@@ -36,7 +36,7 @@ function getCurrentSeason() {
   }
 }
 function getCurrentDate(){
-  return moment().format('DD-mm-yyyy')
+  return moment().format('DD-MM-yyyy')
 }
 module.exports = {
   getCurrentDate,
