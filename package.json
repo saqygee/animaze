@@ -1,6 +1,6 @@
 {
   "name": "stremio-rd-search-addon",
-  "version": "1.0.0",
+  "version": "1.2.3",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
