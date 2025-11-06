@@ -1,12 +1,11 @@
 require("dotenv").config();
-const { addonBuilder, serveHTTP } = require("stremio-addon-sdk");
+const { addonBuilder, getInterface } = require("stremio-addon-sdk");
 const express = require("express");
 
 const manifest = require("./manifest.json");
 const { addDays, dayAfter, getCurrentDate } = require("./utils/helpers");
 const { getAiringAnime } = require("./scrapers/ranker");
 const AniList = require("./scrapers/Anilist");
-const { getNetflixOrignals } = require("./scrapers/netflix");
 
 const PORT = process.env.PORT || 7000;
 const omdbAPIKey = process.env.OMDB_API_KEY;
@@ -23,33 +22,50 @@ builder.defineCatalogHandler(async ({ id, config }) => {
   try {
     if (!omdbAPIKey) return { metas: [] };
 
+    // Define allowed catalogs (ignore old ones automatically)
+    const validCatalogs = new Set([
+      "top-airing-ranker",
+      "top-airing-anilist",
+      "top-anilist",
+      "season-anilist",
+      "popular-anilist",
+      "next-to-watch-anilist",
+      "upcoming-anilist"
+    ]);
+
+    // Gracefully handle deprecated or unknown catalogs
+    if (!validCatalogs.has(id)) {
+      //console.log(`Ignoring deprecated catalog: ${id}`);
+      return { metas: [] };
+    }
+
     const anilist = new AniList(omdbAPIKey);
     const cacheKey = id;
     const MAX_ANIME = 50;
-    
+
     let cachedData = memoryStorage.get(cacheKey) || [];
     let nextUpdateDate = memoryStorage.get("nextUpdateDate");
 
     const shouldUpdate = !nextUpdateDate || dayAfter(nextUpdateDate) || cachedData.length <= 0;
-    console.log('shouldUpdate: ', shouldUpdate, 'for catalog:', cacheKey);
+    console.log("shouldUpdate:", shouldUpdate, "for catalog:", cacheKey);
 
     if (shouldUpdate) {
-      // Check if an update is already in progress for this catalog
       if (!updatePromises.has(cacheKey)) {
-        console.log('Starting update for catalog:', cacheKey);
-        
+        console.log("Starting update for catalog:", cacheKey);
+
         const updatePromise = (async () => {
           try {
             const updatedOn = getCurrentDate();
             const willNextUpdateOn = addDays(NEXT_DAYS);
 
-            console.log('Setting next update to:', willNextUpdateOn);
-            console.log('Updated on:', updatedOn);
+            console.log("Setting next update to:", willNextUpdateOn);
+            console.log("Updated on:", updatedOn);
 
             memoryStorage.set("updatedOn", updatedOn);
             memoryStorage.set("nextUpdateDate", willNextUpdateOn);
 
             let newData = [];
+
             switch (cacheKey) {
               case "top-airing-ranker":
                 newData = await getAiringAnime(MAX_ANIME);
@@ -73,32 +89,29 @@ builder.defineCatalogHandler(async ({ id, config }) => {
                 newData = await anilist.getUpcomingAnime(MAX_ANIME);
                 break;
               default:
+                console.log(`Unknown catalog key: ${cacheKey}`);
+                newData = [];
                 break;
             }
-            
+
             memoryStorage.set(cacheKey, newData);
-            console.log('Update completed for catalog:', cacheKey, 'with', newData?.length, 'items');
+            console.log("Update completed for catalog:", cacheKey, "with", newData?.length, "items");
             return newData;
           } catch (error) {
-            console.error('Update failed for catalog:', cacheKey, error);
+            console.error("Update failed for catalog:", cacheKey, error);
             throw error;
           } finally {
-            // Clean up the promise tracker
             updatePromises.delete(cacheKey);
           }
         })();
 
         updatePromises.set(cacheKey, updatePromise);
-        
-        // Wait for the update to complete and use the new data
         cachedData = await updatePromise;
       } else {
-        // Update already in progress, wait for it to complete
-        console.log('Update already in progress for catalog:', cacheKey, 'waiting...');
+        console.log("Update already in progress for catalog:", cacheKey, "waiting...");
         cachedData = await updatePromises.get(cacheKey);
       }
     } else {
-      // No update needed, use cached data
       if (cachedData.length <= 0) {
         cachedData = memoryStorage.get(cacheKey) || [];
       }
@@ -111,11 +124,25 @@ builder.defineCatalogHandler(async ({ id, config }) => {
     return { metas: cachedData };
   } catch (err) {
     console.error("Catalog handler error:", err);
-    // If there's an error, try to return whatever cached data we have
     const cachedData = memoryStorage.get(id) || [];
     return { metas: cachedData };
   }
 });
 
-// --- Serve Stremio Interface ---
-serveHTTP(builder.getInterface(), { port: PORT });
+// --- Express app with IP/User-Agent logging middleware ---
+const app = express();
+
+app.use((req, res, next) => {
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  const userAgent = req.headers["user-agent"] || "Unknown";
+  console.log(`[${new Date().toISOString()}] ${ip} → ${req.method} ${req.originalUrl}`);
+  console.log(`User-Agent: ${userAgent}\n`);
+  next();
+});
+
+// --- Mount Stremio interface ---
+const addonInterface = getInterface(builder);
+app.use("/", addonInterface);
+
+// --- Start the server ---
+app.listen(PORT, () => console.log(`✅ Stremio Addon running on port ${PORT}`));
