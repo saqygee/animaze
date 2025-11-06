@@ -1,4 +1,7 @@
 # Changelog
+## [1.2.3] - 2025-11-06
+   -'Added ip logging for usage tracking'
+   -'ignored request from old catalogs'
 ## [1.2.2] - 2025-10-04
   -'Removed broken netflix list'
   -'Fixed render circular upading problem'
