@@ -1,6 +1,5 @@
 require("dotenv").config();
-const { addonBuilder, getInterface } = require("stremio-addon-sdk");
-const express = require("express");
+const { addonBuilder,serveHTTP } = require("stremio-addon-sdk");
 
 const manifest = require("./manifest.json");
 const { addDays, dayAfter, getCurrentDate } = require("./utils/helpers");
@@ -30,7 +29,8 @@ builder.defineCatalogHandler(async ({ id, config }) => {
       "season-anilist",
       "popular-anilist",
       "next-to-watch-anilist",
-      "upcoming-anilist"
+      "upcoming-anilist",
+      "trending-now-anilist"    
     ]);
 
     // Gracefully handle deprecated or unknown catalogs
@@ -41,7 +41,7 @@ builder.defineCatalogHandler(async ({ id, config }) => {
 
     const anilist = new AniList(omdbAPIKey);
     const cacheKey = id;
-    const MAX_ANIME = 50;
+    const MAX_ANIME = 30;
 
     let cachedData = memoryStorage.get(cacheKey) || [];
     let nextUpdateDate = memoryStorage.get("nextUpdateDate");
@@ -68,7 +68,7 @@ builder.defineCatalogHandler(async ({ id, config }) => {
 
             switch (cacheKey) {
               case "top-airing-ranker":
-                newData = await getAiringAnime(MAX_ANIME);
+                newData = await getAiringAnime(50);
                 break;
               case "top-airing-anilist":
                 newData = await anilist.getAiringNow(MAX_ANIME);
@@ -87,6 +87,9 @@ builder.defineCatalogHandler(async ({ id, config }) => {
                 break;
               case "upcoming-anilist":
                 newData = await anilist.getUpcomingAnime(MAX_ANIME);
+                break;
+              case "trending-now-anilist":
+                newData = await anilist.getTrendingNow(MAX_ANIME);
                 break;
               default:
                 console.log(`Unknown catalog key: ${cacheKey}`);
@@ -129,20 +132,4 @@ builder.defineCatalogHandler(async ({ id, config }) => {
   }
 });
 
-// --- Express app with IP/User-Agent logging middleware ---
-const app = express();
-
-app.use((req, res, next) => {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-  const userAgent = req.headers["user-agent"] || "Unknown";
-  console.log(`[${new Date().toISOString()}] ${ip} → ${req.method} ${req.originalUrl}`);
-  console.log(`User-Agent: ${userAgent}\n`);
-  next();
-});
-
-// --- Mount Stremio interface ---
-const addonInterface = getInterface(builder);
-app.use("/", addonInterface);
-
-// --- Start the server ---
-app.listen(PORT, () => console.log(`✅ Stremio Addon running on port ${PORT}`));
+serveHTTP(builder.getInterface(), { port: PORT });

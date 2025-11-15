@@ -36,6 +36,7 @@ class AniList {
       throw new Error(`AniList API Error: ${err}`);
     }
   }
+
   async _omdbProcess(data) {
     try {
       const result = await Promise.all(
@@ -59,6 +60,7 @@ class AniList {
       console.log("_omdbProcess:", err);
     }
   }
+
   async getAiringNow(limit = 10) {
     const query = `
       query ($page: Int, $perPage: Int) {
@@ -75,6 +77,7 @@ class AniList {
         }
       }
     `;
+    const randomPage = Math.floor(Math.random() * 10) + 1;
     const data = await this._query(query, { page: 1, perPage: limit });
     const seriesData = this._omdbProcess(data.Page.media);
 
@@ -101,9 +104,9 @@ class AniList {
         }
       }
     `;
-
+    const randomPage = Math.floor(Math.random() * 10) + 1;
     const variables = {
-      page: 1,
+      page: randomPage,
       perPage: limit,
     };
 
@@ -154,37 +157,45 @@ class AniList {
     return seriesData;
   }
 
-  async getPopularAnime(limit = 10) {
-    const query = `
-      query ($perPage: Int) {
-        Page(page: 1, perPage: $perPage) {
-          media(type: ANIME, sort: POPULARITY_DESC) {
-            id
-            title { english romaji }
-            popularity
-            
-            coverImage {
-              large
-            }
+ async getPopularAnime(limit = 10) {
+  const query = `
+    query ($perPage: Int, $page: Int) {
+      Page(page: $page, perPage: $perPage) {
+        media(type: ANIME, sort: POPULARITY_DESC) {
+          id
+          title { english romaji }
+          popularity
+          coverImage {
+            large
           }
         }
       }
-    `;
-    const data = await this._query(query, {
-      perPage: limit,
-    });
-    if (!data?.Page?.media) {
-      throw new Error("Invalid response structure from AniList API");
     }
-
-    const seriesData = this._omdbProcess(data.Page.media);
-    return seriesData;
+  `;
+  
+  // Get a random page to randomize results
+  const randomPage = Math.floor(Math.random() * 10) + 1; // Random page between 1-10
+  
+  const data = await this._query(query, {
+    perPage: limit,
+    page: randomPage
+  });
+  
+  if (!data?.Page?.media) {
+    throw new Error("Invalid response structure from AniList API");
   }
 
-  async getNextToWatch(limit = 5) {
+  // Optional: Shuffle the results for more randomness
+  const shuffledMedia = data.Page.media.sort(() => Math.random() - 0.5);
+  
+  const seriesData = this._omdbProcess(shuffledMedia);
+  return seriesData;
+}
+
+ async getNextToWatch(limit = 5) {
     const query = `
-    query ($perPage: Int) {
-      Page(page: 1, perPage: $perPage) {
+    query ($perPage: Int,  $page: Int) {
+      Page(page: $page, perPage: $perPage) {
         media(type: ANIME, sort: POPULARITY_DESC) {
           id
           title {
@@ -214,15 +225,16 @@ class AniList {
       }
     }
   `;
-
-    const data = await this._query(query, { perPage: limit });
+    const randomPage = Math.floor(Math.random() * 10) + 1; // Random page between 1-10
+    const data = await this._query(query, { perPage: limit, page:randomPage });
 
     if (!data?.Page?.media) {
       throw new Error("Invalid response structure from AniList API");
     }
+    const shuffledMedia = data.Page.media.sort(() => Math.random() - 0.5);
 
     // Flatten all recommendations from all media into a single array
-    const allRecommendations = data.Page.media.flatMap((media) =>
+    const allRecommendations = shuffledMedia.flatMap((media) =>
       media.recommendations.nodes.map((rec) => rec.mediaRecommendation)
     );
 
@@ -253,27 +265,39 @@ class AniList {
 
   async getUpcomingAnime(limit = 10) {
     const query = `
-      query ($perPage: Int) {
-        Page(page: 1, perPage: $perPage) {
-          media(type: ANIME, status: NOT_YET_RELEASED, sort: POPULARITY_DESC) {
-            id
-            title { english romaji }
-            startDate { year month day }
-            coverImage {
-                large
-            }
-            description
+    query ($perPage: Int) {
+      Page(page: 1, perPage: $perPage) {
+        media(type: ANIME, status: NOT_YET_RELEASED, sort: POPULARITY_DESC) {
+          id
+          title { 
+            english
+            romaji
+            native
           }
+          startDate { year month day }
+          coverImage {
+            large
+          }
+          description
         }
       }
-    `;
+    }
+  `;
+
     const data = await this._query(query, {
       perPage: limit,
     });
+
     if (!data?.Page?.media) {
       throw new Error("Invalid response structure from AniList API");
     }
-    const seriesData = this._omdbProcess(data.Page.media);
+
+    // Filter for media that has English titles and process
+    const englishMedia = data.Page.media.filter(media =>
+      media?.title?.english && media.title.english.trim() !== ""
+    );
+
+    const seriesData = await this._omdbProcess(englishMedia);
     return seriesData;
   }
 
@@ -296,6 +320,40 @@ class AniList {
     const data = await this._query(query, { genre, perPage: limit });
     return data.Page.media;
   }
+
+  async getTrendingNow(limit = 15) {
+    const query = `
+      query ($perPage: Int, $page: Int) {
+        Page(page: $page, perPage: $perPage) {
+          media(type: ANIME, sort: TRENDING_DESC) {
+            id
+            title { 
+              english
+              romaji
+            }
+            trending
+            popularity
+            coverImage {
+              large
+            }
+            description
+          }
+        }
+      }
+    `;
+    const randomPage = Math.floor(Math.random() * 10) + 1; // Random page between 1-10
+    const data = await this._query(query, { perPage: limit, page:randomPage });
+    const seriesData = await this._omdbProcess(data.Page.media);
+    return seriesData;
+  }
+
+
+
 }
+
+
+
+
+
 
 module.exports = AniList;

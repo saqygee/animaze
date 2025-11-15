@@ -7,13 +7,16 @@ const axios = require('axios');
 function cleanTitle(title) {
   if (typeof title !== 'string') return '';
   return title
-    .replace(/season\s*\d+/gi, '')
-    .replace(/part\s*\d+/gi, '')
-    .replace(/\(\s*\)/g, '') // remove empty parenthesis if any
-    .replace(/\s{2,}/g, ' ') // collapse multiple spaces
+    // Remove everything after season/part/final season patterns including the pattern itself
+    .replace(/(season\s*\d+|part\s*\d+|final\s*season).*/gi, '')
+    // Remove years in parentheses like (2024), (1999), etc.
+    .replace(/\(\s*\d{4}\s*\)/g, '')
+    // Remove empty parenthesis if any
+    .replace(/\(\s*\)/g, '')
+    // Collapse multiple spaces
+    .replace(/\s{2,}/g, ' ')
     .trim();
 }
-
 /**
  * Normalize title to match IMDb's suggestion format
  * e.g., "Dan Da Dan" -> "dandadan"

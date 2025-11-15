@@ -1,4 +1,8 @@
 # Changelog
+## [1.3.0] - 2025-11-06
+   -'Added Trending now category'
+   -'Title clean function improved'
+   -'randomization of catalog lists'
 ## [1.2.3] - 2025-11-06
    -'Added ip logging for usage tracking'
    -'ignored request from old catalogs'

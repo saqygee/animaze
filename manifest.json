@@ -50,7 +50,13 @@
       "type": "series",
       "id": "upcoming-anilist",
       "name": "Upcoming Anime - Anilist"
+    },
+     {
+      "type": "series",
+      "id": "trending-now-anilist",
+      "name": "Trending Now - Anilist"
     }
+    
   ],
   "behaviorHints": {
     "adult": false,
@@ -92,6 +98,12 @@
       "key": "upcoming-anilist",
       "type": "checkbox",
       "title": "Upcoming Anime - Anilist"
+    },
+     {
+      "key": "trending-now-anilist",
+      "type": "checkbox",
+      "title": "Trending Now - Anilist"
     }
+    
   ]
 }
