@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { addonBuilder,serveHTTP } = require("stremio-addon-sdk");
+const { addonBuilder, serveHTTP } = require("stremio-addon-sdk");
 
 const manifest = require("./manifest.json");
 const { addDays, dayAfter, getCurrentDate } = require("./utils/helpers");
@@ -10,22 +10,44 @@ const PORT = process.env.PORT || 7000;
 const omdbAPIKey = process.env.OMDB_API_KEY;
 const NEXT_DAYS = process.env.NEXT_DAYS || 1;
 
-// In-memory storage with update tracking
+// In-memory storage with individual catalog tracking
 const memoryStorage = new Map();
-const updatePromises = new Map(); // Track ongoing updates to prevent duplicate updates
+const updatePromises = new Map();
+const catalogUpdateDates = new Map(); // Track update dates per catalog
 
 const builder = new addonBuilder(manifest);
 
-// --- Define Stremio Catalog Handler ---
+// Initialize catalog update dates
+const initializeCatalogDates = () => {
+  const validCatalogs = [
+    "top-airing-ranker",
+    "top-airing-anilist", 
+    "top-anilist",
+    "season-anilist",
+    "popular-anilist",
+    "next-to-watch-anilist",
+    "upcoming-anilist",
+    "trending-now-anilist"
+  ];
+  
+  validCatalogs.forEach(catalog => {
+    if (!catalogUpdateDates.has(catalog)) {
+      catalogUpdateDates.set(catalog, null);
+    }
+  });
+};
+
 builder.defineCatalogHandler(async ({ id, config }) => {
   try {
     if (!omdbAPIKey) return { metas: [] };
 
-    // Define allowed catalogs (ignore old ones automatically)
+    // Initialize catalog dates on first run
+    initializeCatalogDates();
+
     const validCatalogs = new Set([
       "top-airing-ranker",
       "top-airing-anilist",
-      "top-anilist",
+      "top-anilist", 
       "season-anilist",
       "popular-anilist",
       "next-to-watch-anilist",
@@ -33,9 +55,7 @@ builder.defineCatalogHandler(async ({ id, config }) => {
       "trending-now-anilist"    
     ]);
 
-    // Gracefully handle deprecated or unknown catalogs
     if (!validCatalogs.has(id)) {
-      //console.log(`Ignoring deprecated catalog: ${id}`);
       return { metas: [] };
     }
 
@@ -44,25 +64,27 @@ builder.defineCatalogHandler(async ({ id, config }) => {
     const MAX_ANIME = 30;
 
     let cachedData = memoryStorage.get(cacheKey) || [];
-    let nextUpdateDate = memoryStorage.get("nextUpdateDate");
+    const catalogNextUpdate = catalogUpdateDates.get(cacheKey);
 
-    const shouldUpdate = !nextUpdateDate || dayAfter(nextUpdateDate) || cachedData.length <= 0;
-    console.log("shouldUpdate:", shouldUpdate, "for catalog:", cacheKey);
+    // Check if this specific catalog needs update
+    const shouldUpdate = !catalogNextUpdate || dayAfter(catalogNextUpdate) || cachedData.length <= 0;
+    
+    console.log(`Catalog: ${cacheKey}, Should Update: ${shouldUpdate}, Next Update: ${catalogNextUpdate}`);
 
     if (shouldUpdate) {
       if (!updatePromises.has(cacheKey)) {
-        console.log("Starting update for catalog:", cacheKey);
+        console.log(`Starting update for catalog: ${cacheKey}`);
 
         const updatePromise = (async () => {
           try {
             const updatedOn = getCurrentDate();
             const willNextUpdateOn = addDays(NEXT_DAYS);
 
-            console.log("Setting next update to:", willNextUpdateOn);
-            console.log("Updated on:", updatedOn);
+            console.log(`Setting next update for ${cacheKey} to: ${willNextUpdateOn}`);
+            console.log(`Updated ${cacheKey} on: ${updatedOn}`);
 
-            memoryStorage.set("updatedOn", updatedOn);
-            memoryStorage.set("nextUpdateDate", willNextUpdateOn);
+            // Set update date for this specific catalog
+            catalogUpdateDates.set(cacheKey, willNextUpdateOn);
 
             let newData = [];
 
@@ -98,10 +120,10 @@ builder.defineCatalogHandler(async ({ id, config }) => {
             }
 
             memoryStorage.set(cacheKey, newData);
-            console.log("Update completed for catalog:", cacheKey, "with", newData?.length, "items");
+            console.log(`Update completed for catalog: ${cacheKey} with ${newData?.length} items`);
             return newData;
           } catch (error) {
-            console.error("Update failed for catalog:", cacheKey, error);
+            console.error(`Update failed for catalog: ${cacheKey}`, error);
             throw error;
           } finally {
             updatePromises.delete(cacheKey);
@@ -111,7 +133,7 @@ builder.defineCatalogHandler(async ({ id, config }) => {
         updatePromises.set(cacheKey, updatePromise);
         cachedData = await updatePromise;
       } else {
-        console.log("Update already in progress for catalog:", cacheKey, "waiting...");
+        console.log(`Update already in progress for catalog: ${cacheKey}, waiting...`);
         cachedData = await updatePromises.get(cacheKey);
       }
     } else {
