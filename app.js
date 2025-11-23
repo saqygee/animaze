@@ -8,7 +8,7 @@ const AniList = require("./scrapers/Anilist");
 
 const PORT = process.env.PORT || 7000;
 const omdbAPIKey = process.env.OMDB_API_KEY;
-const NEXT_DAYS = process.env.NEXT_DAYS || 1;
+const NEXT_DAYS = process.env.NEXT_DAYS || 4;
 
 // In-memory storage with individual catalog tracking
 const memoryStorage = new Map();
